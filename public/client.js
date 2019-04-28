@@ -1,53 +1,56 @@
 const socket = io();
 const CIRCLE_RADIUS = 4;
 
+const cursorColors = ["red", "blue", "purple", "yellow"];
+const cursors = {};
+let clientId = null;
+
 socket.on('new-client', function(message) {
   console.log(message);
-  redrawCursors()
 });
 
-socket.on('draw-circle', function() {
+socket.on('start-connection', function(newId) {
+  clientId = newId;
+  document.addEventListener('mousemove', updateCursor);
+})
+
+socket.on('update-cursor', function(cursorOptions) {
+  console.log(cursorOptions);
+  if (!cursors.hasOwnProperty(cursorOptions.id)) {
+    let newColorIndex = (Object.keys(cursors).length) % cursorColors.length;
+    cursors[cursorOptions.id] = cursorOptions;
+    cursors[cursorOptions.id].color = cursorColors[newColorIndex];
+  };
+  Object.assign(cursors[cursorOptions.id], cursorOptions);
   redrawCursors();
-});
+})
 
 const canvas = document.getElementById('main-canvas');
-initializeCanvas();
 
-function initializeCanvas() {
-  const ctx = canvas.getContext('2d');
-  const dpi = window.devicePixelRatio || 1;
-
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const scale = 1;
-
-  canvas.width = scale * width * dpi;
-  canvas.height = scale * height * dpi;
-
-  canvas.style.width = `${scale * width}px`;
-  canvas.style.height = `${scale * height}px`;
-
-  ctx.imageSmoothingEnabled = false;
-
-  ctx.scale(scale * dpi, scale * dpi);
+function updateCursor(event) {
+  socket.emit('update-cursor', {id: clientId, x: event.clientX, y: event.clientY });
 }
 
 function redrawCursors() {
-  drawCircle({ color: "blue"});
+  Object.keys(cursors).forEach(function(cursorId) {
+    let cursorOptions = cursors[cursorId];
+    drawCircle(cursorOptions);
+  });
 }
 
 function drawCircle(cursorOptions) {
   const ctx = canvas.getContext('2d');
-  var randomX = Math.floor(Math.random() * 500);
-  var randomY = Math.floor(Math.random() * 500);
-  console.log('Random X', randomX);
-  console.log('Random Y', randomY);
+
   var color = cursorOptions.color;
+  var x = cursorOptions.x;
+  var y = cursorOptions.y;
 
   ctx.beginPath();
-  ctx.arc(randomX, randomY, CIRCLE_RADIUS, 0, 2 * Math.PI);
+  ctx.arc(x, y, CIRCLE_RADIUS, 0, 2 * Math.PI);
   ctx.strokeStyle = color;
   ctx.stroke();
   ctx.fillStyle = color;
   ctx.fill();
+
+  console.log('DRAW CIRCLE', x, y);
 }
