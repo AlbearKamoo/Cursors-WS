@@ -1,12 +1,12 @@
 const socket = io();
-const CIRCLE_RADIUS = 4;
 
+const circleRadius = 4;
 const cursorColors = ["red", "blue", "purple", "yellow"];
 const cursors = {};
 let clientId = null;
 
 socket.on('new-client', function(message) {
-  console.log(message);
+  console.log('A new client has connected');
 });
 
 socket.on('start-connection', function(newId) {
@@ -15,7 +15,6 @@ socket.on('start-connection', function(newId) {
 })
 
 socket.on('update-cursor', function(cursorOptions) {
-  console.log(cursorOptions);
   if (!cursors.hasOwnProperty(cursorOptions.id)) {
     let newColorIndex = (Object.keys(cursors).length) % cursorColors.length;
     cursors[cursorOptions.id] = cursorOptions;
@@ -48,11 +47,9 @@ function drawCircle(cursorOptions) {
   var y = cursorOptions.y;
 
   ctx.beginPath();
-  ctx.arc(x, y, CIRCLE_RADIUS, 0, 2 * Math.PI);
+  ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
   ctx.strokeStyle = color;
   ctx.stroke();
   ctx.fillStyle = color;
   ctx.fill();
-
-  console.log('DRAW CIRCLE', x, y);
 }

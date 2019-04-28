@@ -10,7 +10,7 @@ app.get('/', function(req, res) {
 
 io.on('connection', function(socket) {
   console.log('Connection to client established');
-  io.emit('new-client', 'A new client has connected');
+  io.emit('new-client');
 
   socket.emit('start-connection', generateId());
   socket.on('update-cursor', function(cursorOptions) {
