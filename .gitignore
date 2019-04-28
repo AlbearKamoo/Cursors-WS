@@ -1,0 +1,17 @@
+# package dependencies
+node_modules/
+
+# npm
+.npm
+
+# environment config
+.env
+
+# node
+*.log
+
+# yarn
+.yarn-integrity
+
+# macOS
+.DS_Store
