@@ -32,6 +32,8 @@ function updateCursor(event) {
 }
 
 function redrawCursors() {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   Object.keys(cursors).forEach(function(cursorId) {
     let cursorOptions = cursors[cursorId];
     drawCircle(cursorOptions);
